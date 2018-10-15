@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Calculadora simple</string>
+    <string name="div_cero">Division entre 0, Error!</string>
+</resources>

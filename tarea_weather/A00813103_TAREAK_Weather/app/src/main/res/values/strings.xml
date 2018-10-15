@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Weather</string>
+    
+    <string name="spinner_label">Cities</string>
+
+    <string-array name="cities_array">
+        <item>Monterrey</item>
+        <item>London</item>
+        <item>Moscu</item>
+        <item>Delhi</item>
+        <item>Sao Paulo</item>
+        <item>Buenos Aires</item>
+    </string-array>
+
+</resources>

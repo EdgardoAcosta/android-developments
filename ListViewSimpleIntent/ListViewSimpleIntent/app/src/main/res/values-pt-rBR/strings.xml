@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ListViewSimple</string>
+    <string name="app_toaster">Voce selecionou\u0020</string>
+
+
+    <string-array name="array_fruits">
+        <item>Banana</item>
+        <item>Abacaxi</item>
+        <item>Laranja</item>
+        <item>Melancia</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ListViewPersonalizada</string>
+    <string name="title_activity_row">RowActivity</string>
+</resources>

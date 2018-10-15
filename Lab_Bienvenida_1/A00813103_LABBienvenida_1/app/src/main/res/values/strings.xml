@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">A00813103_LABBienvenida_1</string>
+    <string name="hint_nombre">Tu nombre</string>
+    <string name="button_saludar">Saludar</string>
+    <string name="foto">Foto</string>
+    <string name="label_mostrar_imagen">Mostrar imagen</string>
+    <string name="mensaje_bienvenida_1">Bienvenido (a) \u0020 </string>
+    <string name="mensaje_bienvenida_2">\u0020 al curso de android</string>
+</resources>

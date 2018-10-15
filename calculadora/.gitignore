@@ -1,0 +1,10 @@
+**/*.pdf
+**/*.doc
+**/*.docx
+**/*.zip
+**/.idea/*
+
+*.docx
+*.pdf
+*.doc
+*.zip

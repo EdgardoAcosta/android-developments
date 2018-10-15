@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">A00813103_LABBienvenida_1</string>
+    <string name="hint_nombre">Seu nome</string>
+    <string name="button_saludar">Comprementar</string>
+    <string name="foto">Imagem</string>
+    <string name="label_mostrar_imagen">Mostrar imagem</string>
+    <string name="mensaje_bienvenida_1">Bem-vindo (a) \u0020 </string>
+    <string name="mensaje_bienvenida_2">\u0020 a o curso de android</string>
+
+</resources>

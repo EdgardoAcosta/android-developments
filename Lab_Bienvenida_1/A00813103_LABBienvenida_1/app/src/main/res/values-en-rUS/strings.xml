@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">A00813103_LABBienvenida_1</string>
+    <string name="hint_nombre">Your name</string>
+    <string name="button_saludar">Greetings</string>
+    <string name="foto">Picture</string>
+    <string name="label_mostrar_imagen">Show image</string>
+    <string name="mensaje_bienvenida_1">Wellcome \u0020 </string>
+    <string name="mensaje_bienvenida_2">\u0020 to the android class</string>
+
+</resources>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ListViewSimple</string>
+    <string name="app_toaster">Seleccionaste\u0020</string>
+
+    <string-array name="array_fruits">
+        <item>Platano</item>
+        <item>Piña</item>
+        <item>Naranja</item>
+        <item>Sandia</item>
+    </string-array>
+</resources>

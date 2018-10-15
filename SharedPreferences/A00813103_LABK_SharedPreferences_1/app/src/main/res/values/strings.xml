@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">A00813103_LABK_SharedPreferences_1</string>
+    <string name="input_name">Tu nombre aqui</string>
+    <string name="input_email">Tu email aqui</string>
+    <string name="button_save">Guardar</string>
+
+    <string name="default_value_name">Indefinid@</string>
+    <string name="default_value_email">noname@mail.com</string>
+</resources>
