@@ -1,10 +1,16 @@
 package com.edgardo.a00813103_labandroidk_room
 
-import android.graphics.Bitmap
+import Database.Converters
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_detail.*
-import kotlinx.android.synthetic.main.row.view.*
+import java.io.File
+//import com.sun.tools.corba.se.idl.Util.getAbsolutePath
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import android.util.Log
+import java.nio.file.Files.exists
+
 
 class DetailActivity : AppCompatActivity() {
 
@@ -13,18 +19,35 @@ class DetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail)
 
         val extras = intent.extras ?: return
-        val _id = extras.getString(MainActivity.BOOK_KEY)
-        val titulo = extras.getString(MainActivity.BOOK_TITLE)
+//        val _id = extras.getInt(MainActivity.BOOK_KEY)
+        val title = extras.getString(MainActivity.BOOK_TITLE)
         val isbn = extras.getString(MainActivity.ISBN)
-        val fecha = extras.getString(MainActivity.FECHA_PUBLICACION)
+        val date = extras.getString(MainActivity.FECHA_PUBLICACION)
+        val pathImage = extras.getString(MainActivity.IMAGE_PATH)
 
-        val idImagen = Bitmap.createBitmap( extras.getByteArray(MainActivity.ID_IMAGE_KEY))
 
-        text_name.text = titulo
-        text_isbn = isbn
-        text_date = fecha
 
-        image_libroDetail.setImageBitmap(idImagen)
 
+        text_name.text = title
+        text_isbn.text = isbn
+        text_date.text = date
+        supportActionBar!!.title = title
+
+
+        val imgFile =  File(pathImage)
+        if (imgFile.exists()) {
+            val myBitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
+            image_libroDetail.setImageBitmap(myBitmap)
+
+        }
+        else {
+            val idImagen = Converters.toBitmap(extras.getByteArray(MainActivity.ID_IMAGE_KEY)!!)
+            image_libroDetail.setImageBitmap(idImagen)
+            Log.d("ErrorPhoto", "No photo found")
+        }
+
+        button_ok.setOnClickListener { view ->
+            this.finish()
+        }
     }
 }
