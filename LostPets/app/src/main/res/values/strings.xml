@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">LostPets</string>
+    <string name="title_pet">Pet</string>
+    <string name="title_favorite">Favorites</string>
+    <string name="title_search">Search</string>
+
+    <string name="detail_show_actionbar_name">Detail of \u0020  </string>
+    <string name="detail_add_actionbar_name">Add new pet</string>
+
+    <string name="input_detail_name">Dog Name</string>
+    <string name="input_detail_spinner">Races</string>
+    <string name="input_detail_email">Email</string>
+    <string name="input_detail_phone">Phone</string>
+    <string name="input_detail_address">Address</string>
+    <string name="button_detail_image">Make a Picture</string>
+    <string name="button_detail_cancel">Cancel</string>
+    <string name="button_detail_save">Save</string>
+    <string name="label_detail_spinner">Races</string>
+    <string name="label_detail_checkBox">Favorites</string>
+    <string name="label_detail_image">Image</string>
+
+
+    <!--Spinner-->
+    <string-array name="races_array">
+        <item>Undefined</item>
+        <item>Pequines</item>
+        <item>Chihuahua</item>
+        <item>Pastor Aleman</item>
+        <item>York Shire</item>
+        <item>Labrador</item>
+        <item>Dalmata</item>
+        <item>Husky</item>
+        <item>Pitbul</item>
+    </string-array>
+</resources>

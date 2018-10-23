@@ -1,16 +1,15 @@
 package com.edgardo.a00813103_labk_sqlite_room2
 
-import Database.Converters
 import Database.Libro
 import Database.LibroData
 import Database.LibroDatabase
 import NetworkUtility.Executor.Companion.ioThread
+import android.arch.lifecycle.Observer
 import android.content.Intent
+import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
-import android.arch.lifecycle.Observer
 
 
 class MainActivity : AppCompatActivity(), CustomItemClickListener {
@@ -64,12 +63,10 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
     private fun loadBooks() {
         ioThread {
             val book = instanceDatabase.bookDao().loadAllBooks()
-            book.observe(this, object : Observer<List<Libro>>{
-                override fun onChanged(libros:List<Libro>?){
-                    adapter = BookAdapter(libros!!, this@MainActivity)
-                    recyclerview_lista_libros.adapter = adapter
-                    adapter.notifyDataSetChanged()
-                }
+            book.observe(this, Observer<List<Libro>> { libros ->
+                adapter = BookAdapter(libros!!, this@MainActivity)
+                recyclerview_lista_libros.adapter = adapter
+                adapter.notifyDataSetChanged()
             })
 
         }
@@ -86,12 +83,13 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
     override fun onCustomItemClickListener(libro: Libro) {
         val intent = Intent(this, DetailActivity::class.java)
 //        intent.putExtra(BOOK, libro)
+
         intent.putExtra(BOOK_TITLE, libro.titulo)
         intent.putExtra(ISBN, libro.isbn)
-        intent.putExtra(FECHA_PUBLICACION, Converters.toString( libro.fecha_pulicacion))
-
+        intent.putExtra(FECHA_PUBLICACION,  libro.fecha_pulicacion)
         intent.putExtra(ID_IMAGE_KEY, libro.imagenLibro)
         intent.putExtra(IMAGE_PATH, libro.imagenLibroPath)
+
         startActivity(intent)
 
     }
