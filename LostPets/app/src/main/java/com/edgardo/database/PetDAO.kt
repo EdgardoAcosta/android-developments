@@ -14,6 +14,9 @@ interface PetDAO {
     @Query("SELECT * FROM Pet WHERE Favorite = 1")
     fun loadFavoritePets() : LiveData<List<Pet>>
 
+    @Query("SELECT * FROM Pet WHERE Race = :race")
+    fun searchPet(race: Int): LiveData<List<Pet>>
+
     @Query("SELECT COUNT (*) FROM Pet")
     fun getAnyPet(): Int
 

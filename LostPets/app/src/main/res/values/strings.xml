@@ -5,14 +5,16 @@
     <string name="title_search">Search</string>
 
     <string name="detail_show_actionbar_name">Detail of \u0020  </string>
+    <string name="detail_edit_actionbar_name">Edit pet \u0020  </string>
     <string name="detail_add_actionbar_name">Add new pet</string>
+    <string name="detail_msg_required_filed">This field is required</string>
 
     <string name="input_detail_name">Dog Name</string>
     <string name="input_detail_spinner">Races</string>
     <string name="input_detail_email">Email</string>
     <string name="input_detail_phone">Phone</string>
     <string name="input_detail_address">Address</string>
-    <string name="button_detail_image">Make a Picture</string>
+    <string name="button_detail_image">Take a Picture</string>
     <string name="button_detail_cancel">Cancel</string>
     <string name="button_detail_save">Save</string>
     <string name="label_detail_spinner">Races</string>

@@ -9,7 +9,7 @@ import com.edgardo.database.Pet
 import kotlinx.android.synthetic.main.row.view.*
 
 
-class PetAdapter (val pets: List<Pet>, val listener: CustomItemClickListener) : RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
+class PetAdapter (val pets: List<Pet>, var listener: ((Pet) -> Unit)?) : RecyclerView.Adapter<PetAdapter.PetViewHolder>() {
 
     lateinit var pet: Pet
     private var numberOfItems = pets.size
@@ -47,13 +47,14 @@ class PetAdapter (val pets: List<Pet>, val listener: CustomItemClickListener) : 
 
             itemView.text_name.text = pet.Name
             itemView.text_date_added.text = pet.DateFound
+            itemView.text_location_found.text = pet.LocationFound
             itemView.image_pet.setImageBitmap(Converters.toBitmap(pet.ImagePet!!))
 
         }
 
         override fun onClick(p0: View?) {
             val pet = pets[adapterPosition]
-            listener.onCustomItemClickListener(pet)
+            listener?.invoke(pet)
         }
     }
 

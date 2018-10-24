@@ -6,7 +6,6 @@ import android.arch.persistence.room.PrimaryKey
 import android.arch.persistence.room.TypeConverters
 import android.os.Parcel
 import android.os.Parcelable
-import java.util.Date
 
 @Entity(tableName = "Pet")
 @TypeConverters(Converters::class)

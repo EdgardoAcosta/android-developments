@@ -28,7 +28,7 @@ class PetDataTest(val context: Context) {
                 "Perrito 1", 1, "Calle numero 1",
                 "2018/01/23", "+52123456", "mail@gmail.com",
                 Converters.toByteArray(getBitmap(R.drawable.default_dog)),
-                0
+                1
             )
         )
 

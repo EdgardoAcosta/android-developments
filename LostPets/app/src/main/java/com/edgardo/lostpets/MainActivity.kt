@@ -5,9 +5,7 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
 import com.edgardo.database.Pet
@@ -19,25 +17,38 @@ import android.widget.Toast
 import android.widget.Toast.makeText
 
 
-class MainActivity : AppCompatActivity(), CustomItemClickListener {
-
+class MainActivity : AppCompatActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_pet -> {
-//                message.setText(R.string.title_home)
                 supportActionBar!!.title = "HOME"
+
+                val pet = instanceDatabase.petDao().loadAllPets()
+                pet.observe(this, Observer<List<Pet>> { pets ->
+                    petListFragment.pets = pets ?: emptyList()
+                    petListFragment.onPetClick = ::petClickShow
+                })
 
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_favorite -> {
-//                message.setText(R.string.title_dashboard)
-                supportActionBar!!.title = "DASHBOARD"
+                supportActionBar!!.title = "FAVORITES"
+
+                val pet = instanceDatabase.petDao().loadFavoritePets()
+                pet.observe(this, Observer<List<Pet>> { pets ->
+                    petListFragment.pets = pets ?: emptyList()
+                    petListFragment.onPetClick = ::petClickDetail
+                })
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
-//                message.setText(R.string.title_notifications)
-                supportActionBar!!.title = "NOTIFICATIONS"
+                supportActionBar!!.title = "SEARCH"
+                val pet = instanceDatabase.petDao().searchPet(3)
+                pet.observe(this, Observer<List<Pet>> { pets ->
+                    petListFragment.pets = pets ?: emptyList()
+                    petListFragment.onPetClick = ::petClickShow
+                })
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -46,6 +57,8 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
 
     lateinit var instanceDatabase: PetDatabase
     lateinit var adapter: PetAdapter
+
+    val petListFragment = PetListFragment()
 
     companion object {
         const val PET_KEY: String = "pet key"
@@ -69,11 +82,7 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
         setContentView(R.layout.activity_main)
         supportActionBar!!.title = "HOME"
 
-
         instanceDatabase = PetDatabase.getInstance(this)
-
-        val layoutManager = LinearLayoutManager(this)
-        recyclerView_pets.layoutManager = layoutManager
 
         ioThread {
             val petNum = instanceDatabase.petDao().getAnyPet()
@@ -93,15 +102,23 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-
+        with(supportFragmentManager.beginTransaction()) {
+            add(R.id.content, petListFragment)
+            commit()
+        }
     }
 
-    override fun onCustomItemClickListener(pet: Pet) {
+    fun petClickShow(pet: Pet) {
         val intent = Intent(this, DetailActivity::class.java)
-//        intent.putExtra(BOOK, libro)
-
         intent.putExtra(PET_KEY, pet)
         intent.putExtra(ACTION_KEY, "showDetail")
+        startActivityForResult(intent, REQUEST_DETAIL_SHOW)
+
+    }
+    fun petClickDetail(pet: Pet) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(PET_KEY, pet)
+        intent.putExtra(ACTION_KEY, "editDetail")
         startActivityForResult(intent, REQUEST_DETAIL_SHOW)
 
     }
@@ -111,7 +128,6 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
         val pets_list: List<Pet> = PetDataTest(applicationContext).petList
         Log.d("Sizes list ", pets_list.size.toString())
         ioThread {
-
             instanceDatabase.petDao().insertPetkList(pets_list)
             loadPets()
         }
@@ -121,11 +137,9 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
         ioThread {
             val pet = instanceDatabase.petDao().loadAllPets()
             pet.observe(this, Observer<List<Pet>> { pets ->
-                adapter = PetAdapter(pets!!, this@MainActivity)
-                recyclerView_pets.adapter = adapter
-                adapter.notifyDataSetChanged()
+                petListFragment.pets = pets ?: emptyList()
+                petListFragment.onPetClick = ::petClickShow
             })
-
         }
     }
 
@@ -137,12 +151,15 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
             REQUEST_DETAIL_ADD -> {
                 if (resultCode == Activity.RESULT_OK) {
                     makeText(applicationContext, "Return from add", Toast.LENGTH_SHORT)
+                    // TODO: Recargar la lista
+
                 }
 
             }
             REQUEST_DETAIL_SHOW -> {
                 if (resultCode == Activity.RESULT_OK) {
                     makeText(applicationContext, "Return from show", Toast.LENGTH_SHORT)
+                    // TODO: Recargar la lista 
 
                 }
 
@@ -151,8 +168,4 @@ class MainActivity : AppCompatActivity(), CustomItemClickListener {
     }
 
 
-}
-
-interface CustomItemClickListener {
-    fun onCustomItemClickListener(pet: Pet)
 }
