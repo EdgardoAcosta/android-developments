@@ -11,7 +11,7 @@ interface PetDAO {
     @Query("SELECT * FROM Pet ORDER BY Name")
     fun loadAllPets(): LiveData<List<Pet>>
 
-    @Query("SELECT * FROM Pet WHERE Favorite = 1")
+    @Query("SELECT * FROM Pet WHERE Favorite = 1 ORDER BY Name")
     fun loadFavoritePets() : LiveData<List<Pet>>
 
     @Query("SELECT * FROM Pet WHERE Race = :race")

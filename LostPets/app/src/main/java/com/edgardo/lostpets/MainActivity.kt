@@ -8,13 +8,15 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.edgardo.database.Pet
 import com.edgardo.database.PetDatabase
 import com.edgardo.database.PetDataTest
 import kotlinx.android.synthetic.main.activity_main.*
 import com.edgardo.networkUtility.Executor.Companion.ioThread
 import android.widget.Toast
-import android.widget.Toast.makeText
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +25,8 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.navigation_pet -> {
                 supportActionBar!!.title = "HOME"
-
+                status = 0
+                spinner_search.visibility = View.GONE
                 val pet = instanceDatabase.petDao().loadAllPets()
                 pet.observe(this, Observer<List<Pet>> { pets ->
                     petListFragment.pets = pets ?: emptyList()
@@ -34,17 +37,22 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.navigation_favorite -> {
                 supportActionBar!!.title = "FAVORITES"
+                status = 1
+                spinner_search.visibility = View.GONE
 
                 val pet = instanceDatabase.petDao().loadFavoritePets()
                 pet.observe(this, Observer<List<Pet>> { pets ->
                     petListFragment.pets = pets ?: emptyList()
-                    petListFragment.onPetClick = ::petClickDetail
+                    petListFragment.onPetClick = ::petClickShow
                 })
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
                 supportActionBar!!.title = "SEARCH"
-                val pet = instanceDatabase.petDao().searchPet(3)
+                spinner_search.visibility = View.VISIBLE
+
+                status = 2
+                val pet = instanceDatabase.petDao().searchPet(selectedRace)
                 pet.observe(this, Observer<List<Pet>> { pets ->
                     petListFragment.pets = pets ?: emptyList()
                     petListFragment.onPetClick = ::petClickShow
@@ -57,20 +65,14 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var instanceDatabase: PetDatabase
     lateinit var adapter: PetAdapter
+    var status = 0
 
     val petListFragment = PetListFragment()
+    var selectedRace = 0
 
     companion object {
         const val PET_KEY: String = "pet key"
         const val ACTION_KEY: String = "action to do"
-        const val NAME_KEY: String = "name"
-        const val RACE_KEY: String = "race"
-        const val EMAIL_KEY: String = "email"
-        const val PHONE_KEY: String = "phone"
-        const val FAVORITE_KEY: String = "favorites"
-        const val IMAGE_KEY: String = "id_image"
-        const val DATE_KEY: String = "date found"
-        const val LOCATION_KEY: String = "location found"
         var REQUEST_DETAIL_SHOW: Int = 10
         var REQUEST_DETAIL_ADD: Int = 11
 
@@ -81,6 +83,46 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar!!.title = "HOME"
+        spinner_search.visibility = View.GONE
+
+        //<editor-fold desc="Adapter Spinner">
+        val spinner = findViewById<Spinner>(R.id.spinner_search)
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.races_array, android.R.layout.simple_spinner_item
+        )
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedRace = position
+//                Toast.makeText(
+//                    applicationContext,
+//                    applicationContext.resources.getStringArray(R.array.races_array)[position],
+//                    Toast.LENGTH_SHORT
+//                ).show()
+                if(status == 2){
+                    val pet = instanceDatabase.petDao().searchPet(position)
+                    pet.observe(this@MainActivity, Observer<List<Pet>> { pets ->
+                        petListFragment.pets = pets ?: emptyList()
+                        petListFragment.onPetClick = ::petClickShow
+                    })
+                }
+
+
+            }
+
+        }
+
+
+        //</editor-fold>
 
         instanceDatabase = PetDatabase.getInstance(this)
 
@@ -89,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             if (petNum == 0) {
                 insertPets()
             } else {
-                loadPets()
+                loadAllPets()
             }
 
         }
@@ -108,17 +150,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun petClickShow(pet: Pet) {
+    private fun petClickShow(pet: Pet) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(PET_KEY, pet)
         intent.putExtra(ACTION_KEY, "showDetail")
-        startActivityForResult(intent, REQUEST_DETAIL_SHOW)
-
-    }
-    fun petClickDetail(pet: Pet) {
-        val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra(PET_KEY, pet)
-        intent.putExtra(ACTION_KEY, "editDetail")
         startActivityForResult(intent, REQUEST_DETAIL_SHOW)
 
     }
@@ -129,13 +164,23 @@ class MainActivity : AppCompatActivity() {
         Log.d("Sizes list ", pets_list.size.toString())
         ioThread {
             instanceDatabase.petDao().insertPetkList(pets_list)
-            loadPets()
+            loadAllPets()
         }
     }
 
-    private fun loadPets() {
+    private fun loadAllPets() {
         ioThread {
             val pet = instanceDatabase.petDao().loadAllPets()
+            pet.observe(this, Observer<List<Pet>> { pets ->
+                petListFragment.pets = pets ?: emptyList()
+                petListFragment.onPetClick = ::petClickShow
+            })
+        }
+    }
+
+    private fun loadPetsFavorites() {
+        ioThread {
+            val pet = instanceDatabase.petDao().loadFavoritePets()
             pet.observe(this, Observer<List<Pet>> { pets ->
                 petListFragment.pets = pets ?: emptyList()
                 petListFragment.onPetClick = ::petClickShow
@@ -150,16 +195,45 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_DETAIL_ADD -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    makeText(applicationContext, "Return from add", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext,
+                        applicationContext.getString(R.string.main_msg_pet_added),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val newPet = data!!.getParcelableExtra(DetailActivity.NEW_REGISTER) as Pet
+                    Log.d("Test", "test")
+                    ioThread {
+                        val pet = instanceDatabase.petDao().insertPet(newPet)
+                        loadAllPets()
+                    }
+
                     // TODO: Recargar la lista
+
 
                 }
 
             }
             REQUEST_DETAIL_SHOW -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    makeText(applicationContext, "Return from show", Toast.LENGTH_SHORT)
-                    // TODO: Recargar la lista 
+                    if (data != null) {
+                        Toast.makeText(
+                            applicationContext,
+                            applicationContext.getString(R.string.main_msg_pet_updated),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val newPet = data.getParcelableExtra(DetailActivity.EDIT_REGISTER) as Pet
+                        ioThread {
+                            val pet = instanceDatabase.petDao().updatePet(newPet)
+                            if (status == 0) {
+                                loadAllPets()
+                            } else if (status == 1) {
+                                loadPetsFavorites()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(applicationContext, "Error updating pet", Toast.LENGTH_SHORT).show()
+                    }
 
                 }
 

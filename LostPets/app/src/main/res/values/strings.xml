@@ -8,6 +8,8 @@
     <string name="detail_edit_actionbar_name">Edit pet \u0020  </string>
     <string name="detail_add_actionbar_name">Add new pet</string>
     <string name="detail_msg_required_filed">This field is required</string>
+    <string name="main_msg_pet_added">New pet added</string>
+    <string name="main_msg_pet_updated">Pet updated</string>
 
     <string name="input_detail_name">Dog Name</string>
     <string name="input_detail_spinner">Races</string>

@@ -1,18 +1,13 @@
 package com.edgardo.lostpets
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.edgardo.database.Pet
-
-import com.edgardo.lostpets.dummy.DummyContent
-import com.edgardo.lostpets.dummy.DummyContent.DummyItem
 
 /**
  * A fragment representing a list of Items.
@@ -30,10 +25,14 @@ class PetListFragment : Fragment() {
     var pets: List<Pet>
         get() = petAdapter?.pets ?: emptyList()
         set(value) {
-            petAdapter = PetAdapter(value, petAdapter?.listener)
+            val context = context
 
-            with(view as RecyclerView) {
-                adapter = petAdapter
+            if (context != null) {
+                petAdapter = PetAdapter(value, petAdapter?.listener, context)
+
+                with(view as RecyclerView) {
+                    adapter = petAdapter
+                }
             }
         }
 
@@ -55,10 +54,8 @@ class PetListFragment : Fragment() {
 
         val pets = pets
 
-        if(pets != null) {
-            petAdapter = PetAdapter(pets, onPetClick).apply {
-                listener = onPetClick
-            }
+        petAdapter = PetAdapter(pets, onPetClick, context!!).apply {
+            listener = onPetClick
         }
 
         // Set the adapter

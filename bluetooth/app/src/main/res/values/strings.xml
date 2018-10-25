@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">bluetooth</string>
+    <string name="blu_notfound_inlist">Bluetooth not found</string>
+    <string name="blu_cancelled">Canceled action</string>
+</resources>

@@ -1,10 +1,12 @@
 package com.edgardo.lostpets
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -18,7 +20,10 @@ import android.widget.EditText
 import android.widget.Spinner
 import com.edgardo.database.Converters
 import com.edgardo.database.Pet
+import java.text.SimpleDateFormat
+
 import kotlinx.android.synthetic.main.activity_detail.*
+import java.util.Calendar
 
 class DetailActivity : AppCompatActivity() {
 
@@ -28,12 +33,16 @@ class DetailActivity : AppCompatActivity() {
         const val PHOTO_REQUEST_PERMISSION = 3
         const val HAS_THUMBNAIL_KEY = ""
         const val IMAGE_THUMBNAIL_KEY = ""
+        const val NEW_REGISTER: String = "show_add"
+        const val EDIT_REGISTER: String = "show_edit"
+
     }
 
     var hasThumbnail = false
     var thumbnailBitmap: Bitmap? = null
     var checkBoxStatus = false
     lateinit var action: String
+    var p: Pet? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,13 +79,13 @@ class DetailActivity : AppCompatActivity() {
 
         when (action) {
             "showDetail" -> {
-                val p: Pet = extras.getParcelable(MainActivity.PET_KEY)!!
+                p = extras.getParcelable(MainActivity.PET_KEY)!!
 
                 // Function to parse information and set values
-                showDetail(p)
+                showDetail(p!!)
 
                 // Set spinner
-                spinner_race.setSelection(p.Race)
+                spinner_race.setSelection(p!!.Race)
                 spinner.isEnabled = false
                 spinner.isClickable = false
 
@@ -88,14 +97,12 @@ class DetailActivity : AppCompatActivity() {
                 // Hide favorite button
                 checkBox_favorites.visibility = View.GONE
 
-            }
-            "editDetail" -> {
-                val p: Pet = extras.getParcelable(MainActivity.PET_KEY)!!
-                editDetail(p)
-                // Set spinner
-                spinner_race.setSelection(p.Race)
-                spinner.isEnabled = false
-                spinner.isClickable = false
+                image_foto.isEnabled = true
+                image_foto.isClickable = true
+
+                // hide label for date added
+                label_date_found.visibility = View.GONE
+
             }
         }
         //</editor-fold>
@@ -115,10 +122,11 @@ class DetailActivity : AppCompatActivity() {
     fun onClick(view: View) {
         when (view.id) {
             R.id.button_save -> {
-                if (action == "addPet"){
+                if (action == "addPet") {
                     registerNewPet()
+                } else if (action == "showDetail") {
+                    updatePet()
                 }
-                updatePet()
             }
             R.id.button_cancel -> {
                 setResult(RESULT_CANCELED)
@@ -144,17 +152,42 @@ class DetailActivity : AppCompatActivity() {
     //</editor-fold>
 
     // Save values on register
+    @SuppressLint("SimpleDateFormat")
     private fun registerNewPet() {
         if (validateInputs()) {
-            // TODO: realizaar query para guardar datos
+            val name = label_name.text.toString()
+            val race = spinner_race.selectedItemPosition
+            val location = label_address.text.toString()
 
-            setResult(Activity.RESULT_OK)
+            //Create new date of creation
+            val df = SimpleDateFormat("dd-MM-yy -  h:mm a")
+            val date = df.format(Calendar.getInstance().getTime()).toString()
+            val phone = label_phone.text.toString()
+            val email = label_email.text.toString()
+            val favorite = if (checkBox_favorites.isChecked) 1 else 0
+
+
+            val newPet =
+                Pet(name, race, location, date, phone, email, Converters.toByteArray(thumbnailBitmap!!), favorite)
+
+            val intent = Intent(this, MainActivity::class.java)
+
+            intent.putExtra(NEW_REGISTER, newPet)
+            setResult(Activity.RESULT_OK, intent)
+
+            // Retun to main
+            finish()
         }
     }
 
-    private fun updatePet(){
+    private fun updatePet() {
         // TODO: Agregar query para actualizar una mascota
-        setResult(Activity.RESULT_OK)
+        val intent = Intent(this, MainActivity::class.java)
+        p!!.Favorite = if (checkBox_favorites.isChecked) 1 else 0
+        val newPet = p
+        intent.putExtra(EDIT_REGISTER, newPet)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
 
@@ -226,40 +259,8 @@ class DetailActivity : AppCompatActivity() {
         label_address.setText(p.LocationFound)
         disableEditText(label_address)
 
-        // set checkbox
-        checkBox_favorites.isChecked = (p.Favorite == 1)
-        checkBox_favorites.isEnabled = false
-        checkBox_favorites.isClickable = false
-
-        // hide buttons
-        button_save.visibility = View.GONE
-    }
-
-    private fun editDetail(p: Pet) {
-        // Set bar name
-        supportActionBar!!.title = resources.getString(R.string.detail_edit_actionbar_name) + p.Name
-
-        // Set Name
-        label_name.setText(p.Name)
-        disableEditText(label_name)
-
-
-        // Set image
-        image_foto.setImageBitmap(Converters.toBitmap(p.ImagePet!!))
-        button_image.isEnabled = false
-        button_image.isClickable = false
-
-        // Set email
-        label_email.setText(p.Email)
-        disableEditText(label_email)
-
-        // Set phone
-        label_phone.setText(p.Phone)
-        disableEditText(label_phone)
-
-        // set address
-        label_address.setText(p.LocationFound)
-        disableEditText(label_address)
+        // set date of added
+        label_date_found.text = p.DateFound
 
         // set checkbox
         checkBoxStatus = (p.Favorite == 1)
@@ -271,13 +272,13 @@ class DetailActivity : AppCompatActivity() {
 
     }
 
+
     // Disable all features of a input label
     private fun disableEditText(editText: EditText) {
         editText.isFocusable = false
         editText.isEnabled = false
         editText.isCursorVisible = false
         editText.keyListener = null
-//        editText.setBackgroundColor(Color.TRANSPARENT)
     }
 
     // Validate inputs are not empty
@@ -296,11 +297,9 @@ class DetailActivity : AppCompatActivity() {
             verified = false
         }
         if (!hasThumbnail) {
-            val drawable = resources.getDrawable(R.drawable.default_dog) as BitmapDrawable
-            val bitmap = drawable.getBitmap();
+            val drawable = BitmapFactory.decodeResource(resources, R.drawable.default_pet)
 
-
-            thumbnailBitmap = bitmap
+            thumbnailBitmap = drawable
         }
         if (label_email.text.toString().trim().isEmpty()) {
             label_email.error = resources.getString(R.string.detail_msg_required_filed)

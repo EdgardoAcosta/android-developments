@@ -23,11 +23,12 @@ class PetDataTest(val context: Context) {
     private fun getBitmap(imageId: Int): Bitmap = BitmapFactory.decodeResource(context.resources, imageId)
 
     fun dataList() {
+        val image = BitmapFactory.decodeResource(context.resources,R.drawable.default_pet)
         petList.add(
             Pet(
                 "Perrito 1", 1, "Calle numero 1",
                 "2018/01/23", "+52123456", "mail@gmail.com",
-                Converters.toByteArray(getBitmap(R.drawable.default_dog)),
+                Converters.toByteArray(image),
                 1
             )
         )
@@ -36,7 +37,7 @@ class PetDataTest(val context: Context) {
             Pet(
                 "Perrito 2", 2, "Calle numero 2",
                 "2018/01/23", "+52123456", "mail@gmail.com",
-                Converters.toByteArray(getBitmap(R.drawable.default_dog)),
+                Converters.toByteArray(image),
                 0
             )
         )
@@ -44,7 +45,7 @@ class PetDataTest(val context: Context) {
             Pet(
                 "Perrito 3", 3, "Calle numero 3",
                 "2018/01/23", "+52123456", "mail@gmail.com",
-                Converters.toByteArray(getBitmap(R.drawable.default_dog)),
+                Converters.toByteArray(image),
                 0
             )
         )
