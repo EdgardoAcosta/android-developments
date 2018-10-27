@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//Class: Pet
+// Description: Class to define what is a pet
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
+
 package com.edgardo.database
 
 import android.arch.persistence.room.ColumnInfo
@@ -40,8 +48,8 @@ data class Pet(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(Name)
         parcel.writeInt(Race)
-        parcel.writeString(DateFound)
         parcel.writeString(LocationFound)
+        parcel.writeString(DateFound)
         parcel.writeString(Phone)
         parcel.writeString(Email)
         parcel.writeByteArray(ImagePet)

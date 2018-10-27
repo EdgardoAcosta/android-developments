@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//Class: PetDAO
+// Description: Definition of what each sql command should do
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
+
 package com.edgardo.database
 
 import android.arch.lifecycle.LiveData

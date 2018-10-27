@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Mascotas Perdidads</string>
+    <string name="title_pet">Mascota</string>
+    <string name="title_favorite">Favoritos</string>
+    <string name="title_search">Buscar</string>
+
+    <string name="detail_show_actionbar_name">Detalles de \u0020</string>
+    <string name="detail_edit_actionbar_name">Editar \u0020</string>
+    <string name="detail_add_actionbar_name">Agregar nueva mascota</string>
+    <string name="detail_msg_required_filed">Campo Obligatorio</string>
+    <string name="detail_msg_cancel_action">Mascota no salvada</string>
+
+    <string name="main_msg_pet_added">Mascota agregada</string>
+    <string name="main_msg_pet_updated">Mascota Actualizada</string>
+    <string name="main_msg_empty_list">No mascotas encontradas para \u0020</string>
+
+    <string name="input_detail_name">Nombre</string>
+    <string name="input_detail_spinner">Raza</string>
+    <string name="input_detail_email">Correo</string>
+    <string name="input_detail_phone">Telefono</string>
+    <string name="input_detail_address">Direccion</string>
+    <string name="button_detail_image">Tomar Foto</string>
+    <string name="button_detail_cancel">Cancelar</string>
+    <string name="button_detail_delete">Borrar</string>
+    <string name="button_detail_save">Salvar</string>
+    <string name="label_detail_spinner">Razas</string>
+    <string name="label_detail_checkBox">Favoritos</string>
+    <string name="label_detail_image">Imagen</string>
+
+
+    <!--Spinner-->
+    <string-array name="razas_array">
+        <item>Indefinido</item>
+        <item>Pequines</item>
+        <item>Chihuahua</item>
+        <item>Pastor Aleman</item>
+        <item>York Shire</item>
+        <item>Labrador</item>
+        <item>Dalmata</item>
+        <item>Husky</item>
+        <item>Pitbul</item>
+    </string-array>
+</resources>

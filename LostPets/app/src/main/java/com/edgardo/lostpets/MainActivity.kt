@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//Class: MainActivity
+// Description: Class that corresponds to the main layout
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
+
 package com.edgardo.lostpets
 
 import android.app.Activity
@@ -7,6 +15,7 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -18,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import com.edgardo.networkUtility.Executor.Companion.ioThread
 import android.widget.Toast
 
+// TODO: Agregar vista para landscape en detail
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,8 +64,19 @@ class MainActivity : AppCompatActivity() {
                 status = 2
                 val pet = instanceDatabase.petDao().searchPet(selectedRace)
                 pet.observe(this, Observer<List<Pet>> { pets ->
-                    petListFragment.pets = pets ?: emptyList()
+//                    if (pets?.size == 0) {
+//                        val toast: Toast = Toast.makeText(
+//                            applicationContext,
+//                            applicationContext.getString(R.string.main_msg_empty_list) +
+//                                    applicationContext.resources.getStringArray(R.array.races_array)[selectedRace],
+//                            Toast.LENGTH_SHORT
+//                        )
+//                        toast.setGravity(Gravity.CENTER, 0, 0)
+//                        toast.show()
+//                    }
+                    petListFragment.pets =  pets ?: emptyList()
                     petListFragment.onPetClick = ::petClickShow
+
                 })
                 return@OnNavigationItemSelectedListener true
             }
@@ -64,7 +85,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     lateinit var instanceDatabase: PetDatabase
-    lateinit var adapter: PetAdapter
     var status = 0
 
     val petListFragment = PetListFragment()
@@ -96,32 +116,35 @@ class MainActivity : AppCompatActivity() {
         spinner.adapter = adapter
 
 
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedRace = position
-//                Toast.makeText(
-//                    applicationContext,
-//                    applicationContext.resources.getStringArray(R.array.races_array)[position],
-//                    Toast.LENGTH_SHORT
-//                ).show()
-                if(status == 2){
+                if (status == 2) {
                     val pet = instanceDatabase.petDao().searchPet(position)
+
                     pet.observe(this@MainActivity, Observer<List<Pet>> { pets ->
+//                        if (pets?.size == 0) {
+//                            val toast: Toast = Toast.makeText(
+//                                applicationContext,
+//                                applicationContext.getString(R.string.main_msg_empty_list) +
+//                                        applicationContext.resources.getStringArray(R.array.races_array)[position],
+//                                Toast.LENGTH_SHORT
+//                            )
+//                            toast.setGravity(Gravity.CENTER, 0, 0)
+//                            toast.show()
+//                        }
                         petListFragment.pets = pets ?: emptyList()
                         petListFragment.onPetClick = ::petClickShow
+
                     })
                 }
-
-
             }
 
         }
-
-
         //</editor-fold>
 
         instanceDatabase = PetDatabase.getInstance(this)
@@ -188,6 +211,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun loaPetsSearch() {
+        ioThread {
+            val pet = instanceDatabase.petDao().searchPet(selectedRace)
+            pet.observe(this, Observer<List<Pet>> { pets ->
+                petListFragment.pets = pets ?: emptyList()
+                petListFragment.onPetClick = ::petClickShow
+            })
+        }
+    }
+
     // End -> set initial data
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -202,14 +235,10 @@ class MainActivity : AppCompatActivity() {
                     ).show()
 
                     val newPet = data!!.getParcelableExtra(DetailActivity.NEW_REGISTER) as Pet
-                    Log.d("Test", "test")
                     ioThread {
                         val pet = instanceDatabase.petDao().insertPet(newPet)
                         loadAllPets()
                     }
-
-                    // TODO: Recargar la lista
-
 
                 }
 
@@ -222,19 +251,37 @@ class MainActivity : AppCompatActivity() {
                             applicationContext.getString(R.string.main_msg_pet_updated),
                             Toast.LENGTH_SHORT
                         ).show()
-                        val newPet = data.getParcelableExtra(DetailActivity.EDIT_REGISTER) as Pet
+                        val editPet = data.getParcelableExtra(DetailActivity.EDIT_REGISTER) as Pet
+                        val delete = data.getStringExtra(DetailActivity.DELETE_PET)
+
                         ioThread {
-                            val pet = instanceDatabase.petDao().updatePet(newPet)
-                            if (status == 0) {
-                                loadAllPets()
-                            } else if (status == 1) {
-                                loadPetsFavorites()
+                            // Check if want to delete or update a record
+                            if (delete != null && delete == "yes") {
+                                instanceDatabase.petDao().deletePet(editPet)
+                            } else {
+                                instanceDatabase.petDao().updatePet(editPet)
+                            }
+
+                            // Load information on correct fragment
+                            Log.d("Status view", status.toString())
+                            when (status) {
+                                0 -> loadAllPets()
+                                1 -> loadPetsFavorites()
+//                                2 -> loaPetsSearch()
                             }
                         }
+
+
                     } else {
                         Toast.makeText(applicationContext, "Error updating pet", Toast.LENGTH_SHORT).show()
                     }
 
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        applicationContext,
+                        applicationContext.getString(R.string.detail_msg_cancel_action),
+                        Toast.LENGTH_SHORT
+                    )
                 }
 
             }

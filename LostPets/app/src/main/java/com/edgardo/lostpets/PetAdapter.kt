@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//Class: PetAdapter
+// Description: Definition of the adapter for each pet
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
+
 package com.edgardo.lostpets
 
 import android.content.Context

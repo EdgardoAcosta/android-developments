@@ -4,12 +4,15 @@
     <string name="title_favorite">Favorites</string>
     <string name="title_search">Search</string>
 
-    <string name="detail_show_actionbar_name">Detail of \u0020  </string>
-    <string name="detail_edit_actionbar_name">Edit pet \u0020  </string>
+    <string name="detail_show_actionbar_name">Detail of \u0020</string>
+    <string name="detail_edit_actionbar_name">Edit pet \u0020</string>
     <string name="detail_add_actionbar_name">Add new pet</string>
     <string name="detail_msg_required_filed">This field is required</string>
+    <string name="detail_msg_cancel_action">Pet dont saved</string>
+
     <string name="main_msg_pet_added">New pet added</string>
     <string name="main_msg_pet_updated">Pet updated</string>
+    <string name="main_msg_empty_list">No pets found for \u0020</string>
 
     <string name="input_detail_name">Dog Name</string>
     <string name="input_detail_spinner">Races</string>
@@ -18,6 +21,7 @@
     <string name="input_detail_address">Address</string>
     <string name="button_detail_image">Take a Picture</string>
     <string name="button_detail_cancel">Cancel</string>
+    <string name="button_detail_delete">Delete</string>
     <string name="button_detail_save">Save</string>
     <string name="label_detail_spinner">Races</string>
     <string name="label_detail_checkBox">Favorites</string>
@@ -25,11 +29,11 @@
 
 
     <!--Spinner-->
-    <string-array name="races_array">
+    <string-array name="razas_array">
         <item>Undefined</item>
-        <item>Pequines</item>
+        <item>Pekingese</item>
         <item>Chihuahua</item>
-        <item>Pastor Aleman</item>
+        <item>German shepherd</item>
         <item>York Shire</item>
         <item>Labrador</item>
         <item>Dalmata</item>

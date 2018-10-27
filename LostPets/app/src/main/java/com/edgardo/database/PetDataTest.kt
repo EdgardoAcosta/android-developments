@@ -1,3 +1,10 @@
+//////////////////////////////////////////////////////////
+//Class: PetDataTest
+// Description: Dummy data to test the application
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
 package com.edgardo.database
 
 import android.arch.persistence.room.TypeConverters
@@ -9,7 +16,8 @@ import android.util.Log
 import com.edgardo.lostpets.R
 import java.io.File
 import java.io.FileOutputStream
-import java.util.UUID
+import java.text.SimpleDateFormat
+import java.util.*
 
 // CLass to create default data
 @TypeConverters(Converters::class)
@@ -23,11 +31,13 @@ class PetDataTest(val context: Context) {
     private fun getBitmap(imageId: Int): Bitmap = BitmapFactory.decodeResource(context.resources, imageId)
 
     fun dataList() {
-        val image = BitmapFactory.decodeResource(context.resources,R.drawable.default_pet)
+        val image = BitmapFactory.decodeResource(context.resources, R.drawable.default_pet)
+        val df = SimpleDateFormat("dd-MM-yy -  h:mm a")
+            val date = df.format(Calendar.getInstance().time).toString()
         petList.add(
             Pet(
                 "Perrito 1", 1, "Calle numero 1",
-                "2018/01/23", "+52123456", "mail@gmail.com",
+                date, "+52123456", "mail@gmail.com",
                 Converters.toByteArray(image),
                 1
             )
@@ -36,7 +46,7 @@ class PetDataTest(val context: Context) {
         petList.add(
             Pet(
                 "Perrito 2", 2, "Calle numero 2",
-                "2018/01/23", "+52123456", "mail@gmail.com",
+                date, "+52123456", "mail@gmail.com",
                 Converters.toByteArray(image),
                 0
             )
@@ -44,7 +54,7 @@ class PetDataTest(val context: Context) {
         petList.add(
             Pet(
                 "Perrito 3", 3, "Calle numero 3",
-                "2018/01/23", "+52123456", "mail@gmail.com",
+                date, "+52123456", "mail@gmail.com",
                 Converters.toByteArray(image),
                 0
             )

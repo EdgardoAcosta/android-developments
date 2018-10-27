@@ -1,3 +1,10 @@
+//////////////////////////////////////////////////////////
+//Class: DetailActivity
+// Description: Class that corresponds to the detailed layout
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
 package com.edgardo.lostpets
 
 import android.Manifest
@@ -7,23 +14,21 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import com.edgardo.database.Converters
 import com.edgardo.database.Pet
-import java.text.SimpleDateFormat
-
 import kotlinx.android.synthetic.main.activity_detail.*
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailActivity : AppCompatActivity() {
 
@@ -31,10 +36,11 @@ class DetailActivity : AppCompatActivity() {
 
         const val TAKE_PHOTO_REQUEST = 2
         const val PHOTO_REQUEST_PERMISSION = 3
-        const val HAS_THUMBNAIL_KEY = ""
+        const val HAS_THUMBNAIL_KEY = "hasThumbnail"
         const val IMAGE_THUMBNAIL_KEY = ""
         const val NEW_REGISTER: String = "show_add"
         const val EDIT_REGISTER: String = "show_edit"
+        const val DELETE_PET: String = "deletePet"
 
     }
 
@@ -48,6 +54,23 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+
+        //<editor-fold desc="Default values">
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+
+        button_delete.visibility = View.GONE
+        //</editor-fold>
+
+        //<editor-fold desc="Saved Instance">
+        if (savedInstanceState != null) {
+            hasThumbnail = savedInstanceState.getBoolean(HAS_THUMBNAIL_KEY)
+            if (hasThumbnail) {
+                thumbnailBitmap = savedInstanceState.getParcelable(IMAGE_THUMBNAIL_KEY)
+                image_foto.setImageBitmap(thumbnailBitmap)
+            }
+        }
+        //</editor-fold>
 
         //<editor-fold desc="Adapter Spinner">
         val spinner = findViewById<Spinner>(R.id.spinner_race)
@@ -72,10 +95,9 @@ class DetailActivity : AppCompatActivity() {
 
         //</editor-fold>
 
-
         //<editor-fold desc="Get data from intent">
         val extras = intent.extras ?: return
-        action = extras.getString(MainActivity.ACTION_KEY)
+        action = extras.getString(MainActivity.ACTION_KEY)!!
 
         when (action) {
             "showDetail" -> {
@@ -88,6 +110,7 @@ class DetailActivity : AppCompatActivity() {
                 spinner_race.setSelection(p!!.Race)
                 spinner.isEnabled = false
                 spinner.isClickable = false
+                button_delete.visibility = View.VISIBLE
 
             }
             "addPet" -> {
@@ -111,9 +134,9 @@ class DetailActivity : AppCompatActivity() {
         button_image.setOnClickListener { onClick(it) }
         button_save.setOnClickListener { onClick(it) }
         button_cancel.setOnClickListener { onClick(it) }
+        button_delete.setOnClickListener { onClick(it) }
         checkBox_favorites.setOnClickListener { onClick(it) }
         //</editor-fold>
-
 
     }
 
@@ -131,6 +154,9 @@ class DetailActivity : AppCompatActivity() {
             R.id.button_cancel -> {
                 setResult(RESULT_CANCELED)
                 finish()
+            }
+            R.id.button_delete -> {
+                deletePet()
             }
             R.id.button_image -> {
                 // Start camera
@@ -151,6 +177,7 @@ class DetailActivity : AppCompatActivity() {
     }
     //</editor-fold>
 
+    //<editor-fold desc="Manipulate data">
     // Save values on register
     @SuppressLint("SimpleDateFormat")
     private fun registerNewPet() {
@@ -161,7 +188,7 @@ class DetailActivity : AppCompatActivity() {
 
             //Create new date of creation
             val df = SimpleDateFormat("dd-MM-yy -  h:mm a")
-            val date = df.format(Calendar.getInstance().getTime()).toString()
+            val date = df.format(Calendar.getInstance().time).toString()
             val phone = label_phone.text.toString()
             val email = label_email.text.toString()
             val favorite = if (checkBox_favorites.isChecked) 1 else 0
@@ -181,7 +208,6 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun updatePet() {
-        // TODO: Agregar query para actualizar una mascota
         val intent = Intent(this, MainActivity::class.java)
         p!!.Favorite = if (checkBox_favorites.isChecked) 1 else 0
         val newPet = p
@@ -190,6 +216,14 @@ class DetailActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun deletePet() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(DELETE_PET, "yes")
+        intent.putExtra(EDIT_REGISTER, p)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+    //</editor-fold>
 
     //<editor-fold desc="Take photo">
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -197,12 +231,11 @@ class DetailActivity : AppCompatActivity() {
         hasThumbnail = false
 
         if (requestCode == TAKE_PHOTO_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                thumbnailBitmap = data?.extras?.get("data") as Bitmap
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                thumbnailBitmap = data.extras?.get("data") as Bitmap
                 hasThumbnail = true
                 image_foto.setImageBitmap(thumbnailBitmap)
-
-
+                Log.d("hasThumbnail", hasThumbnail.toString())
             } else {
                 // Image Canceled
             }
@@ -210,15 +243,30 @@ class DetailActivity : AppCompatActivity() {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
 
+        Log.d("hasThumbnail", hasThumbnail.toString())
         outState?.putBoolean(HAS_THUMBNAIL_KEY, hasThumbnail)
         if (hasThumbnail) {
             outState?.putParcelable(IMAGE_THUMBNAIL_KEY, thumbnailBitmap)
         }
 
     }
+
+//    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+//        super.onRestoreInstanceState(savedInstanceState)
+//        Log.d("hasThumbnail", hasThumbnail.toString())
+//        if (savedInstanceState != null) {
+//            hasThumbnail = savedInstanceState.getBoolean(HAS_THUMBNAIL_KEY)
+//            if (hasThumbnail) {
+//                thumbnailBitmap = savedInstanceState.getParcelable(IMAGE_THUMBNAIL_KEY)
+//                image_foto.setImageBitmap(thumbnailBitmap)
+//            }
+//
+//        }
+//
+//    }
 
     private fun activateCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -228,7 +276,6 @@ class DetailActivity : AppCompatActivity() {
         }
     }
     //</editor-fold>
-
 
     //<editor-fold desc="Helpers">
 

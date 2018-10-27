@@ -1,3 +1,10 @@
+//////////////////////////////////////////////////////////
+//Class: Converters
+// Description: Common use conversion on the application
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
 package com.edgardo.database
 
 import android.arch.persistence.room.TypeConverter

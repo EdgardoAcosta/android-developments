@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//Class: PetListFragment
+// Description: Class to define the fragment to manage the list of pets
+// Author: Edgardo Acosta Leal
+// Date created: 22/10/2018
+// Last modification: 25/10/2018
+//////////////////////////////////////////////////////////
+
 package com.edgardo.lostpets
 
 import android.os.Bundle
@@ -11,8 +19,6 @@ import com.edgardo.database.Pet
 
 /**
  * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [ItemFragment.OnListFragmentInteractionListener] interface.
  */
 class PetListFragment : Fragment() {
 
